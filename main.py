@@ -1,10 +1,16 @@
+import os
+import io
+import uvicorn
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import JSONResponse, Response
 from rembg import remove
 from PIL import Image, UnidentifiedImageError
-import io
 
 app = FastAPI()
+
+@app.get("/")
+def home():
+    return {"message": "BG Remove API Working"}
 
 @app.post("/remove-bg")
 async def remove_background(file: UploadFile = File(...)):
@@ -19,6 +25,7 @@ async def remove_background(file: UploadFile = File(...)):
         except UnidentifiedImageError:
             return JSONResponse({"error": "Invalid image format"}, status_code=400)
 
+        # Background Remove
         output_image = remove(input_image)
 
         img_bytes = io.BytesIO()
@@ -28,12 +35,9 @@ async def remove_background(file: UploadFile = File(...)):
         return Response(content=img_bytes.getvalue(), media_type="image/png")
 
     except Exception as e:
-        # Debug return message
         return JSONResponse({"error": str(e)}, status_code=500)
 
 
-# 🔥 Render fix → Manually PORT define + run app
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))   # Default fallback 10000
+    port = int(os.environ.get("PORT", 10000))
     uvicorn.run("main:app", host="0.0.0.0", port=port)
-
