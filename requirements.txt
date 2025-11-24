@@ -1,7 +1,4 @@
 fastapi
 uvicorn
-rembg[lite]
-pillow
-python-multipart
-
-
+Pillow
+rembg-lite
