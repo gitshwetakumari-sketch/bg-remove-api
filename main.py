@@ -1,19 +1,16 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import Response
-import io
+from rembg import remove
 from PIL import Image
-from rembg import remove, new_session
+import io
 
-api = FastAPI()
-session = new_session("u2netp")  # lite model for Render
+app = FastAPI()
 
-@api.post("/remove-bg")
-async def remove_background(file: UploadFile = File(...)):
-    input_image = Image.open(io.BytesIO(await file.read()))
-    output_image = remove(input_image, session=session)
+@app.post("/remove-bg")
+async def remove_bg(file: UploadFile = File(...)):
+    image = Image.open(io.BytesIO(await file.read()))
+    output = remove(image)
 
-    img_bytes = io.BytesIO()
-    output_image.save(img_bytes, format="PNG")
-    img_bytes.seek(0)
-
-    return Response(img_bytes.read(), media_type="image/png")
+    buf = io.BytesIO()
+    output.save(buf, format="PNG")
+    return Response(content=buf.getvalue(), media_type="image/png")
