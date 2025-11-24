@@ -1,4 +1,6 @@
 fastapi
 uvicorn
 Pillow
-rembg-lite
+rembg
+onnxruntime
+python-multipart
